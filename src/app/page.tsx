@@ -4,14 +4,14 @@ import * as React from "react";
 import { useState } from "react";
 
 export default function Home() {
-  [trials, setTrials] = useState<ITrial[]>([]);
+  const [trials, setTrials] = useState<ITrial[]>([]);
 
   return (
     <div>
       <div className="text-3xl p-5">Ben's Funding Finder</div>
       <div className="items-center justify-items-center min-h-screen">
         <div>
-          <LoadFile />
+          <LoadFile setTrials={setTrials} />
         </div>
       </div>
     </div>
@@ -20,7 +20,10 @@ export default function Home() {
 
 export interface ITrial {
   nctID: string;
-  primaryLocation: string;
   startYear: number;
   endYear: number;
+  country: string | null;
+  city: string | null;
+  state: string | null;
+  program: string | null;
 }
