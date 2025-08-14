@@ -1,8 +1,9 @@
 "use client";
-import LoadFile from "./components/loadFile";
+import LoadFile, { ILocation } from "./components/loadFile";
 import * as React from "react";
 import { useState } from "react";
 import TrialMenu from "./components/trialMenu";
+import { IInstitution } from "@/context/nihContext";
 
 export default function Home() {
   const [trials, setTrials] = useState<ITrial[]>([]);
@@ -11,7 +12,7 @@ export default function Home() {
     <div>
       <div className="text-3xl p-5 text-blue-700">Ben's Funding Finder</div>
       <div className="items-center justify-items-center w-full">
-        <div className="w-1/2">
+        <div className="w-5/6">
           <LoadFile setTrials={setTrials} />
           <TrialMenu trials={trials} />
         </div>
@@ -22,10 +23,11 @@ export default function Home() {
 
 export interface ITrial {
   nctID: string;
-  startYear: number;
-  endYear: number;
-  country: string | null;
-  city: string | null;
-  state: string | null;
-  program: string | null;
+  years: IYear[];
+  location: ILocation;
+}
+
+interface IYear {
+  year: number;
+  institutions: IInstitution[];
 }

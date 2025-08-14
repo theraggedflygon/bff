@@ -1,7 +1,6 @@
 import * as React from "react";
 // @ts-ignore
 import Papa from "papaparse";
-import { start } from "repl";
 import { ITrial } from "../page";
 
 const state2Abbreviation = require("../../reference/stateAbbreviations.json");
@@ -22,7 +21,7 @@ const LoadFile = ({ setTrials }: LoadFileProps) => {
   };
 
   const parseTrials = (data: string) => {
-    const rows = Papa.parse(data).data;
+    const rows = Papa.parse<string[]>(data).data;
     if (rows.length === 0) {
       return;
     }
@@ -39,24 +38,33 @@ const LoadFile = ({ setTrials }: LoadFileProps) => {
 
     const fileTrials: ITrial[] = [];
     for (let i = 1; i < rows.length; i++) {
+      const startYear = Number.parseInt(rows[i][startIdx]);
+      const endYear = Number.parseInt(rows[i][endIdx]);
+
+      const newYears = [];
+      for (let currentYear = startYear; currentYear <= endYear; currentYear++) {
+        newYears.push({ year: currentYear, institutions: [] });
+      }
+
       const newTrial: ITrial = {
         nctID: rows[i][nctIdIdx],
-        startYear: rows[i][startIdx],
-        endYear: rows[i][endIdx],
-        country: null,
-        state: null,
-        city: null,
-        program: null,
+        location: {
+          country: null,
+          state: null,
+          city: null,
+          program: null,
+        },
+        years: newYears,
       };
 
       const primaryLocationStr = rows[i][locationsIdx].split("|")[0];
       if (primaryLocationStr !== "N/A" && primaryLocationStr !== "") {
         const { country, state, city, program } =
           parseLocation(primaryLocationStr);
-        newTrial.country = country;
-        newTrial.state = state;
-        newTrial.city = city;
-        newTrial.program = program;
+        newTrial.location.country = country;
+        newTrial.location.state = state;
+        newTrial.location.city = city;
+        newTrial.location.program = program;
       }
       fileTrials.push(newTrial);
     }
@@ -122,7 +130,7 @@ interface LoadFileProps {
   setTrials: (trials: ITrial[]) => void;
 }
 
-interface ILocation {
+export interface ILocation {
   country: string | null;
   city: string | null;
   state: string | null;
