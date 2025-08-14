@@ -103,7 +103,40 @@ export const getRenderInstitution = (institution: IInstitution): string => {
   })`;
 };
 
-export const renderMatches = (matches: IInstitution[]) => {
+const renderMatchDiv = (
+  idx: number,
+  institution: IInstitution,
+  highlight: string | null = null
+) => {
+  const institutionString = getRenderInstitution(institution);
+  if (highlight === null) {
+    return <div className="mr-auto">{`${idx + 1}. ${institutionString}`}</div>;
+  } else {
+    const highlightIndex = institutionString
+      .toLowerCase()
+      .indexOf(highlight.toLowerCase());
+    const preHighlightStr = institutionString.slice(0, highlightIndex);
+    const highlightStr = institutionString.slice(
+      highlightIndex,
+      highlightIndex + highlight.length
+    );
+    const postHighlightStr = institutionString.slice(
+      highlightIndex + highlight.length
+    );
+    return (
+      <div className="mr-auto flex flex-row whitespace-pre">
+        {preHighlightStr}
+        <p className="bg-yellow-400">{highlightStr}</p>
+        {postHighlightStr}
+      </div>
+    );
+  }
+};
+
+export const renderMatches = (
+  matches: IInstitution[],
+  highlight: string | null = null
+) => {
   return (
     <div className="px-2">
       {matches.map((match, idx) => (
@@ -111,9 +144,7 @@ export const renderMatches = (matches: IInstitution[]) => {
           key={idx}
           className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
         >
-          <div className="mr-auto">{`${idx + 1}. ${getRenderInstitution(
-            match
-          )}`}</div>
+          {renderMatchDiv(idx, match, highlight)}
           <button className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer mx-1">
             +
           </button>

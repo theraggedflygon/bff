@@ -5,6 +5,7 @@ import { getRenderInstitution, renderMatches } from "./trialYears";
 
 const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
   const [filterText, setFilterText] = useState("");
+  const [displayFilterText, setDisplayFilterText] = useState("");
   const [filteredInstitutions, setFilteredInstitutions] = useState<
     IInstitution[]
   >([]);
@@ -15,6 +16,7 @@ const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
 
   useEffect(() => {
     setFilterText("");
+    setDisplayFilterText("");
     const NIHYears = NIHFundingData.filter((ny) => ny.year === year);
     if (NIHYears.length > 0) {
       setFilteredInstitutions(NIHYears[0].institutions);
@@ -22,6 +24,7 @@ const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
   }, [trialIdx, year]);
 
   const handleFilterChange = () => {
+    setDisplayFilterText(filterText);
     const NIHYears = NIHFundingData.filter((ny) => ny.year === year);
     if (NIHYears.length > 0) {
       setFilteredInstitutions(
@@ -62,7 +65,7 @@ const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
         </div>
       );
     } else {
-      return renderMatches(filteredInstitutions);
+      return renderMatches(filteredInstitutions, displayFilterText);
     }
   };
 
