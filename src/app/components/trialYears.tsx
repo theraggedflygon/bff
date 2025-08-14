@@ -2,11 +2,13 @@ import * as React from "react";
 import { useState, useEffect, useContext } from "react";
 import { ITrial } from "../page";
 import { IInstitution, nihContext } from "@/context/nihContext";
+import FilterTrials from "./filterTrials";
 
 const difflib = require("difflib");
 
 const TrialYears = ({ trial, trialIdx }: TrialYearsProps) => {
   const [currentYear, setCurrentYear] = useState(trial.years[0].year);
+
   const NIHData = useContext(nihContext);
 
   useEffect(() => {
@@ -63,28 +65,6 @@ const TrialYears = ({ trial, trialIdx }: TrialYearsProps) => {
     return [];
   };
 
-  const renderMatches = (matches: IInstitution[]) => {
-    return (
-      <div className="px-2">
-        {matches.map((match, idx) => (
-          <div
-            key={idx}
-            className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
-          >
-            <div className="mr-auto">{`${idx + 1}. ${match.name} (${
-              match.city
-            }, ${
-              match.state ? match.state + ", " + match.country : match.country
-            })`}</div>
-            <button className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer">
-              +
-            </button>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   const exactMatches = getExactMatches();
   const nearMatches = getNearMatches();
 
@@ -95,7 +75,7 @@ const TrialYears = ({ trial, trialIdx }: TrialYearsProps) => {
         <select
           name="year"
           id="year-select"
-          className="bg-white rounded-md p-1 ml-2"
+          className="bg-white rounded-md p-1 ml-2 hover:cursor-pointer"
           onChange={handleSelect}
           value={currentYear}
         >
@@ -110,6 +90,38 @@ const TrialYears = ({ trial, trialIdx }: TrialYearsProps) => {
       <div>{renderMatches(exactMatches)}</div>
       <div>Nearest matches for this trial:</div>
       <div>{renderMatches(nearMatches)}</div>
+      <FilterTrials trialIdx={trialIdx} year={currentYear} />
+    </div>
+  );
+};
+
+export const getRenderInstitution = (institution: IInstitution): string => {
+  return `${institution.name} (${institution.city}, ${
+    institution.state
+      ? institution.state + ", " + institution.country
+      : institution.country
+  })`;
+};
+
+export const renderMatches = (matches: IInstitution[]) => {
+  return (
+    <div className="px-2">
+      {matches.map((match, idx) => (
+        <div
+          key={idx}
+          className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
+        >
+          <div className="mr-auto">{`${idx + 1}. ${getRenderInstitution(
+            match
+          )}`}</div>
+          <button className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer mx-1">
+            +
+          </button>
+          <button className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer">
+            ++
+          </button>
+        </div>
+      ))}
     </div>
   );
 };
