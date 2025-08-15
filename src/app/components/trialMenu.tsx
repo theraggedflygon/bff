@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ITrial } from "../page";
 import TrialYears from "./trialYears";
 
-const TrialMenu = ({ trials }: TrialMenuProps) => {
+const TrialMenu = ({ trials, setTrials }: TrialMenuProps) => {
   const [trialIdx, setTrialIdx] = useState(0);
   const [trialIdxField, setTrialIdxField] = useState(1);
 
@@ -95,18 +95,19 @@ const TrialMenu = ({ trials }: TrialMenuProps) => {
         <div>
           {trials[trialIdx].years.map((year) => (
             <div key={trials[trialIdx].nctID + year.year}>
-              {year.year} - {year.institutions.length}
+              {year.year} - {year.institutionIds.length}
             </div>
           ))}
         </div>
       </div>
-      <TrialYears trial={trials[trialIdx]} trialIdx={trialIdx} />
+      <TrialYears trials={trials} trialIdx={trialIdx} setTrials={setTrials} />
     </div>
   );
 };
 
 interface TrialMenuProps {
   trials: ITrial[];
+  setTrials: React.Dispatch<React.SetStateAction<ITrial[]>>;
 }
 
 export default TrialMenu;

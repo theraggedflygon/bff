@@ -11,6 +11,7 @@ interface INIHYear {
 
 export interface IInstitution {
   name: string;
+  id: number;
   country: string;
   city: string;
   state: string | null;

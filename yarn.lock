@@ -524,6 +524,11 @@
   dependencies:
     tslib "^2.4.0"
 
+"@types/difflib@^0.2.7":
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/@types/difflib/-/difflib-0.2.7.tgz#018477ad897c860f64189cfcce8d14a1746e3d77"
+  integrity sha512-NCG38r/Wxkx7ZnGntRAVl3dPReR6nrauZq51viGgCQ8iM0QldrF7mN65SFnU3cJPaXo6Ry5+zhL0EVkfOgJsHw==
+
 "@types/estree@^1.0.6":
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.8.tgz#958b91c991b1867ced318bedea0e215ee050726e"

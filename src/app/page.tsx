@@ -14,7 +14,7 @@ export default function Home() {
       <div className="items-center justify-items-center w-full">
         <div className="w-5/6">
           <LoadFile setTrials={setTrials} />
-          <TrialMenu trials={trials} />
+          <TrialMenu trials={trials} setTrials={setTrials} />
         </div>
       </div>
     </div>
@@ -29,5 +29,5 @@ export interface ITrial {
 
 interface IYear {
   year: number;
-  institutions: IInstitution[];
+  institutionIds: number[];
 }

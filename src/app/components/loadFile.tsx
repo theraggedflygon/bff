@@ -43,7 +43,7 @@ const LoadFile = ({ setTrials }: LoadFileProps) => {
 
       const newYears = [];
       for (let currentYear = startYear; currentYear <= endYear; currentYear++) {
-        newYears.push({ year: currentYear, institutions: [] });
+        newYears.push({ year: currentYear, institutionIds: [] });
       }
 
       const newTrial: ITrial = {

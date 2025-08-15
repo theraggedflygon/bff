@@ -1,9 +1,9 @@
 import { IInstitution, nihContext } from "@/context/nihContext";
 import * as React from "react";
 import { useState, useEffect, useContext } from "react";
-import { getRenderInstitution, renderMatches } from "./trialYears";
+import { getRenderInstitution } from "./trialYears";
 
-const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
+const FilterEntry = ({ trialIdx, year, renderMatches }: FilterTrialsProps) => {
   const [filterText, setFilterText] = useState("");
   const [displayFilterText, setDisplayFilterText] = useState("");
   const [filteredInstitutions, setFilteredInstitutions] = useState<
@@ -92,9 +92,13 @@ const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
   );
 };
 
-export default FilterTrials;
+export default FilterEntry;
 
 interface FilterTrialsProps {
   trialIdx: number;
   year: number;
+  renderMatches: (
+    matches: IInstitution[],
+    highlight?: string | null
+  ) => React.JSX.Element;
 }
