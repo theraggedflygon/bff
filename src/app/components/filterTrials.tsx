@@ -1,9 +1,9 @@
 import { IInstitution, nihContext } from "@/context/nihContext";
 import * as React from "react";
 import { useState, useEffect, useContext } from "react";
-import { getRenderInstitution } from "./trialYears";
+import InstitutionList, { getRenderInstitution } from "./institutionList";
 
-const FilterEntry = ({ trialIdx, year, renderMatches }: FilterTrialsProps) => {
+const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
   const [filterText, setFilterText] = useState("");
   const [displayFilterText, setDisplayFilterText] = useState("");
   const [filteredInstitutions, setFilteredInstitutions] = useState<
@@ -34,13 +34,6 @@ const FilterEntry = ({ trialIdx, year, renderMatches }: FilterTrialsProps) => {
             .includes(filterText.toLowerCase())
         )
       );
-      console.log(
-        NIHYears[0].institutions.filter((inst) =>
-          getRenderInstitution(inst)
-            .toLowerCase()
-            .includes(filterText.toLowerCase())
-        )
-      );
     }
   };
 
@@ -56,16 +49,30 @@ const FilterEntry = ({ trialIdx, year, renderMatches }: FilterTrialsProps) => {
 
     if (filteredInstitutions.length === yearInstitutions.length) {
       return <div></div>;
+    } else if (filteredInstitutions.length === 0) {
+      return (
+        <div className="pl-2">
+          No results found for your filter. Please verify spelling and any
+          punctuation.
+        </div>
+      );
     } else if (filteredInstitutions.length > MAX_INSTITUTIONS) {
       return (
-        <div>
+        <div className="pl-2">
           Your filter matches {filteredInstitutions.length} institutions which
           is more than the maximum allowable ({MAX_INSTITUTIONS}). Please refine
           your search.
         </div>
       );
     } else {
-      return renderMatches(filteredInstitutions, displayFilterText);
+      return (
+        <InstitutionList
+          institutions={filteredInstitutions}
+          highlight={displayFilterText}
+          currentYear={year}
+          trialIdx={trialIdx}
+        />
+      );
     }
   };
 
@@ -92,13 +99,9 @@ const FilterEntry = ({ trialIdx, year, renderMatches }: FilterTrialsProps) => {
   );
 };
 
-export default FilterEntry;
+export default FilterTrials;
 
 interface FilterTrialsProps {
   trialIdx: number;
   year: number;
-  renderMatches: (
-    matches: IInstitution[],
-    highlight?: string | null
-  ) => React.JSX.Element;
 }

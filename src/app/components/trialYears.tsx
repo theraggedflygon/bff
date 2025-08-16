@@ -1,40 +1,23 @@
 import * as React from "react";
 import { useState, useEffect, useContext } from "react";
 import difflib from "difflib";
-import { ITrial } from "../page";
-import { IInstitution, nihContext } from "@/context/nihContext";
+import { useTrials } from "@/context/trialContext";
 import FilterEntry from "./filterTrials";
+import InstitutionList from "./institutionList";
 
-const TrialYears = ({ trials, trialIdx, setTrials }: TrialYearsProps) => {
+const TrialYears = ({ trialIdx }: TrialYearsProps) => {
+  const { trials, getInstitutionsByYear, getInstitutionIdsByTrialAndYear } =
+    useTrials();
+
   const [currentYear, setCurrentYear] = useState(
     trials[trialIdx].years[0].year
   );
-
-  const NIHData = useContext(nihContext);
 
   useEffect(() => {
     if (trials[trialIdx].years.length > 0) {
       setCurrentYear(trials[trialIdx].years[0].year);
     }
   }, [trialIdx]);
-
-  const getInstitutionsByYear = () => {
-    const yearMatches = NIHData.filter((year) => year.year === currentYear);
-    if (yearMatches.length === 0) {
-      return null;
-    }
-    return yearMatches[0].institutions;
-  };
-
-  const getInstitutionIdsByTrialAndYear = () => {
-    const yearMatches = trials[trialIdx].years.filter(
-      (year) => year.year === currentYear
-    );
-    if (yearMatches.length === 0) {
-      return null;
-    }
-    return yearMatches[0].institutionIds;
-  };
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (
@@ -49,7 +32,7 @@ const TrialYears = ({ trials, trialIdx, setTrials }: TrialYearsProps) => {
   };
 
   const getExactMatches = () => {
-    const yearInstitutions = getInstitutionsByYear();
+    const yearInstitutions = getInstitutionsByYear(currentYear);
     if (yearInstitutions !== null) {
       return yearInstitutions.filter(
         (inst) =>
@@ -61,7 +44,7 @@ const TrialYears = ({ trials, trialIdx, setTrials }: TrialYearsProps) => {
   };
 
   const getNearMatches = () => {
-    const yearInstitutions = getInstitutionsByYear();
+    const yearInstitutions = getInstitutionsByYear(currentYear);
     if (yearInstitutions !== null && trials[trialIdx].location.program) {
       const matches = difflib.getCloseMatches(
         trials[trialIdx].location.program.toLowerCase(),
@@ -86,124 +69,93 @@ const TrialYears = ({ trials, trialIdx, setTrials }: TrialYearsProps) => {
     return [];
   };
 
-  const addInstitution = (id: number) => {
-    const newTrials = [...trials];
-    const yearIds = getInstitutionIdsByTrialAndYear();
-    if (yearIds === null) {
-      return;
-    }
-    if (yearIds.includes(id)) {
-      return;
-    }
-    newTrials[trialIdx].years
-      .filter((ty) => ty.year === currentYear)[0]
-      .institutionIds.push(id);
-    setTrials(newTrials);
-  };
+  // const renderMatchDiv = (
+  //   idx: number,
+  //   institution: IInstitution,
+  //   highlight: string | null = null
+  // ) => {
+  //   const institutionString = getRenderInstitution(institution);
+  //   if (highlight === null) {
+  //     return (
+  //       <div className="mr-auto">{`${idx + 1}. ${institutionString}`}</div>
+  //     );
+  //   } else {
+  //     const highlightIndex = institutionString
+  //       .toLowerCase()
+  //       .indexOf(highlight.toLowerCase());
+  //     const preHighlightStr = institutionString.slice(0, highlightIndex);
+  //     const highlightStr = institutionString.slice(
+  //       highlightIndex,
+  //       highlightIndex + highlight.length
+  //     );
+  //     const postHighlightStr = institutionString.slice(
+  //       highlightIndex + highlight.length
+  //     );
+  //     return (
+  //       <div className="whitespace-pre-wrap mr-auto">
+  //         <span>
+  //           {preHighlightStr}
+  //           <span className="bg-yellow-300">{highlightStr}</span>
+  //           {postHighlightStr}
+  //         </span>
+  //       </div>
+  //     );
+  //   }
+  // };
 
-  const removeInstitution = (id: number) => {
-    const newTrials = [...trials];
-    const yearIds = getInstitutionIdsByTrialAndYear();
-    if (yearIds === null) {
-      return;
-    }
-    const removeIdx = yearIds.indexOf(id);
-    if (removeIdx < 0) {
-      return;
-    }
-    newTrials[trialIdx].years
-      .filter((ty) => ty.year === currentYear)[0]
-      .institutionIds.splice(removeIdx, 1);
+  // const renderMatches = (
+  //   matches: IInstitution[],
+  //   highlight: string | null = null
+  // ) => {
+  //   const currentIds = getInstitutionIdsByTrialAndYear();
 
-    setTrials(newTrials);
-  };
-
-  const renderMatchDiv = (
-    idx: number,
-    institution: IInstitution,
-    highlight: string | null = null
-  ) => {
-    const institutionString = getRenderInstitution(institution);
-    if (highlight === null) {
-      return (
-        <div className="mr-auto">{`${idx + 1}. ${institutionString}`}</div>
-      );
-    } else {
-      const highlightIndex = institutionString
-        .toLowerCase()
-        .indexOf(highlight.toLowerCase());
-      const preHighlightStr = institutionString.slice(0, highlightIndex);
-      const highlightStr = institutionString.slice(
-        highlightIndex,
-        highlightIndex + highlight.length
-      );
-      const postHighlightStr = institutionString.slice(
-        highlightIndex + highlight.length
-      );
-      return (
-        <div className="whitespace-pre-wrap mr-auto">
-          <span>
-            {preHighlightStr}
-            <span className="bg-yellow-300">{highlightStr}</span>
-            {postHighlightStr}
-          </span>
-        </div>
-      );
-    }
-  };
-
-  const renderMatches = (
-    matches: IInstitution[],
-    highlight: string | null = null
-  ) => {
-    const currentIds = getInstitutionIdsByTrialAndYear();
-
-    return (
-      <div className="px-2">
-        {matches.map((match, idx) => {
-          if (currentIds?.includes(match.id)) {
-            return (
-              <div
-                key={idx}
-                className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
-              >
-                {renderMatchDiv(idx, match, highlight)}
-                <button
-                  className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer mx-1"
-                  onClick={() => removeInstitution(match.id)}
-                >
-                  ×
-                </button>
-                <button className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer">
-                  ××
-                </button>
-              </div>
-            );
-          }
-          return (
-            <div
-              key={idx}
-              className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
-            >
-              {renderMatchDiv(idx, match, highlight)}
-              <button
-                className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer mx-1"
-                onClick={() => addInstitution(match.id)}
-              >
-                +
-              </button>
-              <button className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer">
-                ++
-              </button>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
+  //   return (
+  //     <div className="px-2">
+  //       {matches.map((match, idx) => {
+  //         if (currentIds?.includes(match.id)) {
+  //           return (
+  //             <div
+  //               key={idx}
+  //               className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
+  //             >
+  //               {renderMatchDiv(idx, match, highlight)}
+  //               <button
+  //                 className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer mx-1"
+  //                 onClick={() => removeInstitution(match.id)}
+  //               >
+  //                 ×
+  //               </button>
+  //               <button className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer">
+  //                 ××
+  //               </button>
+  //             </div>
+  //           );
+  //         }
+  //         return (
+  //           <div
+  //             key={idx}
+  //             className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
+  //           >
+  //             {renderMatchDiv(idx, match, highlight)}
+  //             <button
+  //               className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer mx-1"
+  //               onClick={() => addInstitution(match.id)}
+  //             >
+  //               +
+  //             </button>
+  //             <button className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer">
+  //               ++
+  //             </button>
+  //           </div>
+  //         );
+  //       })}
+  //     </div>
+  //   );
+  // };
 
   const exactMatches = getExactMatches();
   const nearMatches = getNearMatches();
+  const currentIds = getInstitutionIdsByTrialAndYear(trialIdx, currentYear);
 
   return (
     <div className="my-5 p-2 bg-blue-100 rounded-md w-1/2">
@@ -224,30 +176,34 @@ const TrialYears = ({ trials, trialIdx, setTrials }: TrialYearsProps) => {
         </select>
       </div>
       <div>Exact matches for this trial:</div>
-      <div>{renderMatches(exactMatches)}</div>
-      <div>Nearest matches for this trial:</div>
-      <div>{renderMatches(nearMatches)}</div>
-      <FilterEntry
+      <InstitutionList
+        institutions={exactMatches}
+        highlight={null}
+        currentYear={currentYear}
         trialIdx={trialIdx}
-        year={currentYear}
-        renderMatches={renderMatches}
       />
+      <div>Nearest matches for this trial:</div>
+      <InstitutionList
+        institutions={nearMatches}
+        highlight={null}
+        currentYear={currentYear}
+        trialIdx={trialIdx}
+      />
+      <FilterEntry trialIdx={trialIdx} year={currentYear} />
     </div>
   );
 };
 
-export const getRenderInstitution = (institution: IInstitution): string => {
-  return `${institution.name} (${institution.city}, ${
-    institution.state
-      ? institution.state + ", " + institution.country
-      : institution.country
-  })`;
-};
+// export const getRenderInstitution = (institution: IInstitution): string => {
+//   return `${institution.name} (${institution.city}, ${
+//     institution.state
+//       ? institution.state + ", " + institution.country
+//       : institution.country
+//   })`;
+// };
 
 export default TrialYears;
 
 interface TrialYearsProps {
-  trials: ITrial[];
   trialIdx: number;
-  setTrials: React.Dispatch<React.SetStateAction<ITrial[]>>;
 }

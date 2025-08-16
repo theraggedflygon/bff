@@ -1,11 +1,11 @@
 import * as React from "react";
-// @ts-ignore
 import Papa from "papaparse";
-import { ITrial } from "../page";
+import { ITrial, ILocation, useTrials } from "@/context/trialContext";
 
 const state2Abbreviation = require("../../reference/stateAbbreviations.json");
 
-const LoadFile = ({ setTrials }: LoadFileProps) => {
+const LoadFile = () => {
+  const { initializeTrials } = useTrials();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
@@ -69,7 +69,7 @@ const LoadFile = ({ setTrials }: LoadFileProps) => {
       fileTrials.push(newTrial);
     }
 
-    setTrials(fileTrials);
+    initializeTrials(fileTrials);
   };
 
   const parseLocation = (location: string): ILocation => {
@@ -125,16 +125,5 @@ const LoadFile = ({ setTrials }: LoadFileProps) => {
     </div>
   );
 };
-
-interface LoadFileProps {
-  setTrials: (trials: ITrial[]) => void;
-}
-
-export interface ILocation {
-  country: string | null;
-  city: string | null;
-  state: string | null;
-  program: string | null;
-}
 
 export default LoadFile;

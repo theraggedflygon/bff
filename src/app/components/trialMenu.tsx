@@ -1,11 +1,15 @@
 import * as React from "react";
+import { useContext } from "react";
 import { useState } from "react";
-import { ITrial } from "../page";
+import { IYear, useTrials } from "@/context/trialContext";
 import TrialYears from "./trialYears";
+import InstitutionList from "./institutionList";
+import { nihContext } from "@/context/nihContext";
 
-const TrialMenu = ({ trials, setTrials }: TrialMenuProps) => {
+const TrialMenu = () => {
   const [trialIdx, setTrialIdx] = useState(0);
   const [trialIdxField, setTrialIdxField] = useState(1);
+  const { trials, getInstitutionsByYear } = useTrials();
 
   const updateTrialIdx = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newIdx = Number(e.target.value);
@@ -28,6 +32,27 @@ const TrialMenu = ({ trials, setTrials }: TrialMenuProps) => {
       return;
     }
     setTrialIdxField(Number(e.target.value));
+  };
+
+  const renderSelectedInstitutions = (year: IYear) => {
+    const institutions = getInstitutionsByYear(year.year);
+    if (!institutions) {
+      return;
+    }
+    return (
+      <div key={trials[trialIdx].nctID + year.year}>
+        {year.year} - {year.institutionIds.length}{" "}
+        {year.institutionIds.length === 1 ? "Institution" : "Institutions"}
+        <InstitutionList
+          institutions={year.institutionIds.map(
+            (id) => institutions.filter((inst) => inst.id === id)[0]
+          )}
+          currentYear={year.year}
+          trialIdx={trialIdx}
+          highlight={null}
+        />
+      </div>
+    );
   };
 
   if (trials.length === 0) {
@@ -93,21 +118,14 @@ const TrialMenu = ({ trials, setTrials }: TrialMenuProps) => {
             : ", " + trials[trialIdx].location.state}
         </div>
         <div>
-          {trials[trialIdx].years.map((year) => (
-            <div key={trials[trialIdx].nctID + year.year}>
-              {year.year} - {year.institutionIds.length}
-            </div>
-          ))}
+          {trials[trialIdx].years.map((year) =>
+            renderSelectedInstitutions(year)
+          )}
         </div>
       </div>
-      <TrialYears trials={trials} trialIdx={trialIdx} setTrials={setTrials} />
+      <TrialYears trialIdx={trialIdx} />
     </div>
   );
 };
-
-interface TrialMenuProps {
-  trials: ITrial[];
-  setTrials: React.Dispatch<React.SetStateAction<ITrial[]>>;
-}
 
 export default TrialMenu;
