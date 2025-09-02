@@ -17,13 +17,16 @@ const ProgressModal = ({ isOpen, closeModal }: ProgressModalProps) => {
       <div className="bg-gray-200 z-20 fixed left-1/4 w-1/2 rounded-lg p-5">
         <div className="flex flex-row justify-between w-full">
           <div>Trial Progress Tracker</div>
-          <button className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer">
+          <button
+            className="bg-red-300 px-1.5 rounded-sm hover:cursor-pointer hover:bg-red-500"
+            onClick={closeModal}
+          >
             ×
           </button>
         </div>
         <div className="px-5">
           {trials.map((trial, idx) => (
-            <div>
+            <div key={trial.nctID}>
               {idx + 1}. {trial.nctID} - {trial.complete}
             </div>
           ))}

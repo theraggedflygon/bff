@@ -1,6 +1,8 @@
 import { createContext } from "react";
 
-const nihFundingData = require("@/reference/NIH_funding.json");
+import nihFundingDataJson from "@/reference/NIH_funding.json";
+
+const nihFundingData = nihFundingDataJson as INIHYear[];
 
 export const nihContext = createContext<INIHYear[]>(nihFundingData);
 

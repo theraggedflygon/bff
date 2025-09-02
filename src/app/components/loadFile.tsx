@@ -7,7 +7,7 @@ import {
   TrialStatus,
 } from "@/context/trialContext";
 
-const state2Abbreviation = require("../../reference/stateAbbreviations.json");
+import state2AbbreviationJson from "../../reference/stateAbbreviations.json";
 
 const LoadFile = () => {
   const { initializeTrials, getInstitutionsByYear } = useTrials();
@@ -101,6 +101,7 @@ const LoadFile = () => {
   };
 
   const parseLocation = (location: string): ILocation => {
+    const state2Abbreviation: Record<string, string> = state2AbbreviationJson;
     const locationChunks = location.split(",");
     const country = locationChunks[locationChunks.length - 1].trim();
     let city: string | null = null;
@@ -127,7 +128,10 @@ const LoadFile = () => {
           country.toLowerCase() === "canada") &&
         Object.keys(state2Abbreviation).includes(currentChunk)
       ) {
-        state = state2Abbreviation[currentChunk];
+        state =
+          currentChunk in state2Abbreviation
+            ? state2Abbreviation[currentChunk]
+            : "";
         chunkIdx++;
       } else {
         city = currentChunk;
