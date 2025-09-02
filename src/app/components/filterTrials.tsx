@@ -20,10 +20,7 @@ const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
   useEffect(() => {
     setFilterText("");
     setDisplayFilterText("");
-    const NIHYears = NIHFundingData.filter((ny) => ny.year === year);
-    if (NIHYears.length > 0) {
-      setFilteredInstitutions(NIHYears[0].institutions);
-    }
+    setFilteredInstitutions([]);
   }, [trialIdx, year]);
 
   const handleFilterChange = () => {
@@ -63,7 +60,7 @@ const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
         .institutions;
     }
 
-    if (filteredInstitutions.length === yearInstitutions.length) {
+    if (displayFilterText === "") {
       return <div></div>;
     } else if (filteredInstitutions.length === 0) {
       return (

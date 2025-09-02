@@ -81,6 +81,18 @@ const InstitutionList = ({
           ××
         </button>
       );
+    } else if (
+      trials[trialIdx].location.program?.toLowerCase() ===
+      inst.name.toLowerCase()
+    ) {
+      return (
+        <button
+          className="bg-gray-300 px-1.5 rounded-sm hover:cursor-pointer"
+          disabled
+        >
+          N/A
+        </button>
+      );
     }
     return (
       <button
