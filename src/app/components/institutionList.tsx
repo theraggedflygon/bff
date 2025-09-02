@@ -50,6 +50,48 @@ const InstitutionList = ({
     }
   };
 
+  const renderSingleButton = (inst: IInstitution) => {
+    if (currentIds && currentIds.includes(inst.id)) {
+      return (
+        <button
+          className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer mx-1"
+          onClick={() => removeInstitution(inst.id, trialIdx, currentYear)}
+        >
+          ×
+        </button>
+      );
+    }
+    return (
+      <button
+        className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer mx-1"
+        onClick={() => addInstitution(inst.id, trialIdx, currentYear)}
+      >
+        +
+      </button>
+    );
+  };
+
+  const renderDoubleButton = (inst: IInstitution) => {
+    if (trialAliases && trialAliases.includes(inst.name.toLowerCase())) {
+      return (
+        <button
+          className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer"
+          onClick={() => removeAlias(trialIdx, inst.name)}
+        >
+          ××
+        </button>
+      );
+    }
+    return (
+      <button
+        className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer"
+        onClick={() => addAlias(trialIdx, inst.name)}
+      >
+        ++
+      </button>
+    );
+  };
+
   const { trials, aliases } = useTrials();
 
   const filteredAliases = trials[trialIdx].location.program
@@ -64,96 +106,23 @@ const InstitutionList = ({
       ? filteredAliases[0].aliases.map((alias) => alias.toLowerCase())
       : [];
 
-  if (currentYear === 0) {
-    return (
-      <div className="px-2">
-        {institutions.map((inst, idx) => {
-          if (trialAliases.includes(inst.name.toLowerCase())) {
-            return (
-              <div
-                key={idx}
-                className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
-              >
-                {renderMatchDiv(idx, inst, highlight)}
-                <button
-                  className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer"
-                  onClick={() => removeAlias(trialIdx, inst.name)}
-                >
-                  ××
-                </button>
-              </div>
-            );
-          }
-          return (
-            <div
-              key={idx}
-              className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
-            >
-              {renderMatchDiv(idx, inst, highlight)}
-              <button
-                className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer"
-                onClick={() => addAlias(trialIdx, inst.name)}
-              >
-                ++
-              </button>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
   const currentIds = getInstitutionIdsByTrialAndYear(trialIdx, currentYear);
 
-  if (currentIds === null) {
+  if (currentYear !== 0 && currentIds === null) {
     return <div></div>;
   }
 
   return (
     <div className="px-2">
       {institutions.map((inst, idx) => {
-        if (currentIds.includes(inst.id)) {
-          return (
-            <div
-              key={idx}
-              className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
-            >
-              {renderMatchDiv(idx, inst, highlight)}
-              <button
-                className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer mx-1"
-                onClick={() =>
-                  removeInstitution(inst.id, trialIdx, currentYear)
-                }
-              >
-                ×
-              </button>
-              <button
-                className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer"
-                onClick={() => removeAlias(trialIdx, inst.name)}
-              >
-                ××
-              </button>
-            </div>
-          );
-        }
         return (
           <div
             key={idx}
             className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
           >
             {renderMatchDiv(idx, inst, highlight)}
-            <button
-              className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer mx-1"
-              onClick={() => addInstitution(inst.id, trialIdx, currentYear)}
-            >
-              +
-            </button>
-            <button
-              className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer"
-              onClick={() => addAlias(trialIdx, inst.name)}
-            >
-              ++
-            </button>
+            {currentYear === 0 ? <div></div> : renderSingleButton(inst)}
+            {renderDoubleButton(inst)}
           </div>
         );
       })}
