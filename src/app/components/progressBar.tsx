@@ -1,11 +1,16 @@
 import * as React from "react";
-import { useTrials } from "@/context/trialContext";
+import { TrialStatus, useTrials } from "@/context/trialContext";
 
 const ProgressBar = ({ openModal }: ProgressBarProps) => {
   const { trials } = useTrials();
 
   const completedTrials = trials
-    .map((trial): number => (trial.complete ? 1 : 0))
+    .map((trial): number =>
+      trial.complete === TrialStatus.COMPLETE ||
+      trial.complete === TrialStatus.PASSED
+        ? 1
+        : 0
+    )
     .reduce((sum, val) => val + sum, 0);
 
   if (trials.length === 0) {

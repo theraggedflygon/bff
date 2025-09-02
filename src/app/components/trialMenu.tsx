@@ -1,13 +1,14 @@
 import * as React from "react";
 import { useState } from "react";
-import { IYear, useTrials } from "@/context/trialContext";
+import { IYear, TrialStatus, useTrials } from "@/context/trialContext";
 import TrialYears from "./trialYears";
 import InstitutionList from "./institutionList";
 
 const TrialMenu = () => {
   const [trialIdx, setTrialIdx] = useState(0);
   const [trialIdxField, setTrialIdxField] = useState(1);
-  const { trials, getInstitutionsByYear } = useTrials();
+  const { trials, getInstitutionsByYear, handleLock, handleUnlock } =
+    useTrials();
 
   const updateTrialIdx = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newIdx = Number(e.target.value);
@@ -49,6 +50,42 @@ const TrialMenu = () => {
           trialIdx={trialIdx}
           highlight={null}
         />
+      </div>
+    );
+  };
+
+  const renderPassButton = () => {
+    if (trials[trialIdx].complete === TrialStatus.COMPLETE) {
+      return <div></div>;
+    } else if (trials[trialIdx].complete === TrialStatus.PASSED) {
+      return (
+        <div className="flex flex-row pt-10">
+          <div>
+            To resume finding data for this trial, click the button to the
+            right. The trial will be marked as incomplete.
+          </div>
+          <button
+            className="rounded-md px-1.5 bg-yellow-300 hover:cursor-pointer hover:bg-yellow-500 ml-2"
+            onClick={() => handleUnlock(trialIdx)}
+          >
+            Unlock
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-row pt-10">
+        <div>
+          If data for this trial cannot be found, click the button to the right.
+          The trial will be marked as complete.
+        </div>
+        <button
+          className="rounded-md px-1.5 bg-yellow-300 hover:cursor-pointer hover:bg-yellow-500 ml-2"
+          onClick={() => handleLock(trialIdx)}
+        >
+          Lock
+        </button>
       </div>
     );
   };
@@ -120,6 +157,7 @@ const TrialMenu = () => {
             renderSelectedInstitutions(year)
           )}
         </div>
+        {renderPassButton()}
       </div>
       <TrialYears trialIdx={trialIdx} />
     </div>

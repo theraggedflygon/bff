@@ -241,6 +241,20 @@ export const TrialsProvider = ({ children }: { children: ReactNode }) => {
     setTrials(newTrials);
   };
 
+  const handleLock = (trialIdx: number) => {
+    const newTrials = [...trials];
+    newTrials[trialIdx].complete = TrialStatus.PASSED;
+    setTrials(newTrials);
+  };
+
+  const handleUnlock = (trialIdx: number) => {
+    const newTrials = [...trials];
+    newTrials[trialIdx].complete = checkTrialComplete(newTrials[trialIdx])
+      ? TrialStatus.COMPLETE
+      : TrialStatus.INCOMPLETE;
+    setTrials(newTrials);
+  };
+
   return (
     <TrialsContext.Provider
       value={{
@@ -254,6 +268,8 @@ export const TrialsProvider = ({ children }: { children: ReactNode }) => {
         getInstitutionIdsByTrialAndYear: getInstitutionIdsByTrialAndYear,
         getInstitutionsByYear: getInstitutionsByYear,
         getInstitutionsByTrial: getInstitutionsByTrial,
+        handleLock: handleLock,
+        handleUnlock: handleUnlock,
       }}
     >
       {children}
@@ -310,6 +326,8 @@ interface TrialAPI {
   ) => void;
   addAlias: (trialIdx: number, nihInst: string) => void;
   removeAlias: (trialIdx: number, nihInst: string) => void;
+  handleLock: (trialIdx: number) => void;
+  handleUnlock: (trialIdx: number) => void;
 }
 
 export enum TrialStatus {

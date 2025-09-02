@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import difflib from "difflib";
-import { useTrials } from "@/context/trialContext";
+import { TrialStatus, useTrials } from "@/context/trialContext";
 import FilterEntry from "./filterTrials";
 import InstitutionList from "./institutionList";
 
@@ -89,6 +89,17 @@ const TrialYears = ({ trialIdx }: TrialYearsProps) => {
 
   const exactMatches = getExactMatches();
   const nearMatches = getNearMatches();
+
+  if (trials[trialIdx].complete === TrialStatus.PASSED) {
+    return (
+      <div className="my-5 p-2 bg-blue-100 rounded-md w-1/2">
+        <div>
+          This trial has been locked and marked as complete. To continue
+          searching for funding, please unlock it.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="my-5 p-2 bg-blue-100 rounded-md w-1/2">
