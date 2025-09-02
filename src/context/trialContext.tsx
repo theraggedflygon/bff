@@ -249,6 +249,7 @@ export interface ITrial {
   nctID: string;
   years: IYear[];
   location: ILocation;
+  complete: number;
 }
 
 export interface IAlias {
@@ -286,4 +287,10 @@ interface TrialAPI {
   ) => void;
   addAlias: (trialIdx: number, nihInst: string) => void;
   removeAlias: (trialIdx: number, nihInst: string) => void;
+}
+
+export enum TrialStatus {
+  INCOMPLETE = 0,
+  PASSED = 1,
+  COMPLETE = 2,
 }

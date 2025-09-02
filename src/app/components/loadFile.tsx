@@ -1,11 +1,16 @@
 import * as React from "react";
 import Papa from "papaparse";
-import { ITrial, ILocation, useTrials } from "@/context/trialContext";
+import {
+  ITrial,
+  ILocation,
+  useTrials,
+  TrialStatus,
+} from "@/context/trialContext";
 
 const state2Abbreviation = require("../../reference/stateAbbreviations.json");
 
 const LoadFile = () => {
-  const { initializeTrials } = useTrials();
+  const { initializeTrials, getInstitutionsByYear } = useTrials();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
@@ -55,6 +60,7 @@ const LoadFile = () => {
           program: null,
         },
         years: newYears,
+        complete: TrialStatus.INCOMPLETE,
       };
 
       const primaryLocationStr = rows[i][locationsIdx].split("|")[0];
@@ -66,6 +72,28 @@ const LoadFile = () => {
         newTrial.location.city = city;
         newTrial.location.program = program;
       }
+
+      // adds exact matches automatically
+      newTrial.years.forEach((yearObj) => {
+        const yearInstitutions = getInstitutionsByYear(yearObj.year);
+        if (yearInstitutions !== null) {
+          const exactInstitutions = yearInstitutions.filter(
+            (inst) =>
+              inst.name.toLowerCase() ===
+              newTrial.location.program?.toLowerCase()
+          );
+          exactInstitutions.forEach((match) => {
+            yearObj.institutionIds.push(match.id);
+          });
+        }
+      });
+
+      newTrial.complete = newTrial.years
+        .map((yearObj) => yearObj.institutionIds.length > 0)
+        .includes(false)
+        ? TrialStatus.INCOMPLETE
+        : TrialStatus.COMPLETE;
+
       fileTrials.push(newTrial);
     }
 
