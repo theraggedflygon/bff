@@ -78,6 +78,11 @@ export const TrialsProvider = ({ children }: { children: ReactNode }) => {
     newTrials[trialIdx].years
       .filter((ty) => ty.year === currentYear)[0]
       .institutionIds.push(id);
+
+    newTrials[trialIdx].complete = checkTrialComplete(newTrials[trialIdx])
+      ? TrialStatus.COMPLETE
+      : TrialStatus.INCOMPLETE;
+
     setTrials(newTrials);
   };
 
@@ -99,7 +104,19 @@ export const TrialsProvider = ({ children }: { children: ReactNode }) => {
       .filter((ty) => ty.year === currentYear)[0]
       .institutionIds.splice(removeIdx, 1);
 
+    newTrials[trialIdx].complete = checkTrialComplete(newTrials[trialIdx])
+      ? TrialStatus.COMPLETE
+      : TrialStatus.INCOMPLETE;
+
     setTrials(newTrials);
+  };
+
+  const checkTrialComplete = (trial: ITrial) => {
+    return trial.years
+      .map((yearObj) => yearObj.institutionIds.length > 0)
+      .includes(false)
+      ? false
+      : true;
   };
 
   useEffect(() => {
@@ -153,6 +170,9 @@ export const TrialsProvider = ({ children }: { children: ReactNode }) => {
           }
         });
       });
+      trial.complete = checkTrialComplete(trial)
+        ? TrialStatus.COMPLETE
+        : TrialStatus.INCOMPLETE;
     });
     setTrials(newTrials);
   };
@@ -214,6 +234,9 @@ export const TrialsProvider = ({ children }: { children: ReactNode }) => {
           yearData.institutionIds = newInstIds;
         });
       });
+      trial.complete = checkTrialComplete(trial)
+        ? TrialStatus.COMPLETE
+        : TrialStatus.INCOMPLETE;
     });
     setTrials(newTrials);
   };

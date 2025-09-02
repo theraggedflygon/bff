@@ -3,6 +3,7 @@ import LoadFile from "./components/loadFile";
 import * as React from "react";
 import TrialMenu from "./components/trialMenu";
 import { TrialsProvider } from "@/context/trialContext";
+import ProgressBar from "./components/progressBar";
 
 export default function Home() {
   return (
@@ -11,7 +12,10 @@ export default function Home() {
       <div className="items-center justify-items-center w-full">
         <div className="w-5/6">
           <TrialsProvider>
-            <LoadFile />
+            <div className="flex flex-row justify-between">
+              <LoadFile />
+              <ProgressBar />
+            </div>
             <TrialMenu />
           </TrialsProvider>
         </div>
