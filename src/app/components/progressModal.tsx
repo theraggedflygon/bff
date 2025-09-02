@@ -2,11 +2,11 @@ import { useTrials } from "@/context/trialContext";
 import * as React from "react";
 
 const ProgressModal = ({ isOpen, closeModal }: ProgressModalProps) => {
+  const { trials } = useTrials();
+
   if (!isOpen) {
     return <div></div>;
   }
-
-  const { trials } = useTrials();
 
   return (
     <div>

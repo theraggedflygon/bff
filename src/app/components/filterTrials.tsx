@@ -51,15 +51,6 @@ const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
   };
 
   const renderFilteredTrials = () => {
-    let yearInstitutions: IInstitution[];
-
-    if (year === 0) {
-      yearInstitutions = getInstitutionsByTrial(trialIdx);
-    } else {
-      yearInstitutions = NIHFundingData.filter((ny) => ny.year === year)[0]
-        .institutions;
-    }
-
     if (displayFilterText === "") {
       return <div></div>;
     } else if (filteredInstitutions.length === 0) {

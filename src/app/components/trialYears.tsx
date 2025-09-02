@@ -21,7 +21,7 @@ const TrialYears = ({ trialIdx }: TrialYearsProps) => {
     } else {
       setCurrentYear(0);
     }
-  }, [trialIdx]);
+  }, [trialIdx, trials]);
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (
@@ -89,7 +89,6 @@ const TrialYears = ({ trialIdx }: TrialYearsProps) => {
 
   const exactMatches = getExactMatches();
   const nearMatches = getNearMatches();
-  const currentIds = getInstitutionIdsByTrialAndYear(trialIdx, currentYear);
 
   return (
     <div className="my-5 p-2 bg-blue-100 rounded-md w-1/2">

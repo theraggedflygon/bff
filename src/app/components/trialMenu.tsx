@@ -1,10 +1,8 @@
 import * as React from "react";
-import { useContext } from "react";
 import { useState } from "react";
 import { IYear, useTrials } from "@/context/trialContext";
 import TrialYears from "./trialYears";
 import InstitutionList from "./institutionList";
-import { nihContext } from "@/context/nihContext";
 
 const TrialMenu = () => {
   const [trialIdx, setTrialIdx] = useState(0);
