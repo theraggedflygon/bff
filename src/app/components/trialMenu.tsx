@@ -26,6 +26,40 @@ const TrialMenu = () => {
     }
   };
 
+  const nextIncompleteTrial = () => {
+    for (let i = trialIdx + 1; i < trials.length; i++) {
+      if (trials[i].complete === TrialStatus.INCOMPLETE) {
+        incrTrialIdx(i - trialIdx);
+        return;
+      }
+    }
+  };
+
+  const prevIncompleteTrial = () => {
+    for (let i = trialIdx - 1; i >= 0; i--) {
+      console.log(i);
+      if (trials[i].complete === TrialStatus.INCOMPLETE) {
+        console.log(i - trialIdx);
+        incrTrialIdx(i - trialIdx);
+        return;
+      }
+    }
+  };
+
+  const lockAndIncrTrialIdx = (diff: number) => {
+    if (
+      trials[trialIdx].complete === TrialStatus.COMPLETE ||
+      trials[trialIdx].complete === TrialStatus.PASSED ||
+      trialIdx + diff < 0 ||
+      trialIdx + diff > trials.length
+    ) {
+      return;
+    }
+    handleLock(trialIdx);
+    setTrialIdx(trialIdx + diff);
+    setTrialIdxField(trialIdxField + diff);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!Number.isInteger(Number(e.target.value))) {
       return;
@@ -118,17 +152,41 @@ const TrialMenu = () => {
           <div>{" of " + trials.length + ")"}</div>
           <button
             className="bg-gray-300 rounded-md px-3 mx-2 hover:cursor-pointer hover:bg-gray-500 disabled:bg-gray-400 disabled:hover:cursor-not-allowed"
+            onClick={prevIncompleteTrial}
+            disabled={trialIdx === 0}
+          >
+            {"<<"}
+          </button>
+          <button
+            className="bg-gray-300 rounded-md px-3 mr-2 hover:cursor-pointer hover:bg-gray-500 disabled:bg-gray-400 disabled:hover:cursor-not-allowed"
             onClick={() => incrTrialIdx(-1)}
             disabled={trialIdx === 0}
           >
             {"<"}
           </button>
           <button
-            className="bg-gray-300 rounded-md px-3 hover:cursor-pointer hover:bg-gray-500 disabled:bg-gray-400 disabled:hover:cursor-not-allowed"
+            className="bg-gray-300 rounded-md px-3 mr-2 hover:cursor-pointer hover:bg-gray-500 disabled:bg-gray-400 disabled:hover:cursor-not-allowed"
             onClick={() => incrTrialIdx(1)}
             disabled={trialIdx === trials.length - 1}
           >
             {">"}
+          </button>
+          <button
+            className="bg-gray-300 rounded-md px-3 mr-2 hover:cursor-pointer hover:bg-gray-500 disabled:bg-gray-400 disabled:hover:cursor-not-allowed"
+            onClick={nextIncompleteTrial}
+            disabled={trialIdx === trials.length - 1}
+          >
+            {">>"}
+          </button>
+          <button
+            className="bg-gray-300 rounded-md px-3 hover:cursor-pointer hover:bg-gray-500 disabled:bg-gray-400 disabled:hover:cursor-not-allowed"
+            onClick={() => lockAndIncrTrialIdx(1)}
+            disabled={
+              trialIdx === trials.length - 1 ||
+              trials[trialIdx].complete === TrialStatus.PASSED
+            }
+          >
+            {"🔒>"}
           </button>
         </div>
         <div>

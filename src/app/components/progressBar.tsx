@@ -4,6 +4,22 @@ import { TrialStatus, useTrials } from "@/context/trialContext";
 const ProgressBar = ({ openModal }: ProgressBarProps) => {
   const { trials } = useTrials();
 
+  const handleDownload = () => {};
+
+  const renderDownloadButton = () => {
+    if (completedTrials === trials.length || trials.length === 0) {
+      return <div></div>;
+    }
+    return (
+      <button
+        className="bg-blue-200 rounded-md p-2 hover:cursor-pointer hover:bg-blue-400"
+        onClick={handleDownload}
+      >
+        Download
+      </button>
+    );
+  };
+
   const completedTrials = trials
     .map((trial): number =>
       trial.complete === TrialStatus.COMPLETE ||
@@ -30,6 +46,7 @@ const ProgressBar = ({ openModal }: ProgressBarProps) => {
       >
         Details
       </button>
+      {renderDownloadButton()}
     </div>
   );
 };
