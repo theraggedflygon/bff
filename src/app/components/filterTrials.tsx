@@ -28,16 +28,23 @@ const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
 
   const handleFilterChange = () => {
     setDisplayFilterText(filterText);
-    const NIHYears = NIHFundingData.filter((ny) => ny.year === year);
-    if (NIHYears.length > 0) {
-      setFilteredInstitutions(
-        NIHYears[0].institutions.filter((inst) =>
-          getRenderInstitution(inst)
-            .toLowerCase()
-            .includes(filterText.toLowerCase())
-        )
-      );
+
+    let institutionsToFilter;
+    if (year === 0) {
+      institutionsToFilter = getInstitutionsByTrial(trialIdx);
+    } else {
+      const NIHYears = NIHFundingData.filter((ny) => ny.year === year);
+      institutionsToFilter =
+        NIHYears.length > 0 ? NIHYears[0].institutions : [];
     }
+
+    setFilteredInstitutions(
+      institutionsToFilter.filter((inst) =>
+        getRenderInstitution(inst)
+          .toLowerCase()
+          .includes(filterText.toLowerCase())
+      )
+    );
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -50,8 +57,7 @@ const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
     let yearInstitutions: IInstitution[];
 
     if (year === 0) {
-      // yearInstitutions = getInstitutionsByTrial(trialIdx);
-      yearInstitutions = [];
+      yearInstitutions = getInstitutionsByTrial(trialIdx);
     } else {
       yearInstitutions = NIHFundingData.filter((ny) => ny.year === year)[0]
         .institutions;

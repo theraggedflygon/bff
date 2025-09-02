@@ -13,13 +13,13 @@ const TrialYears = ({ trialIdx }: TrialYearsProps) => {
     getInstitutionsByTrial,
   } = useTrials();
 
-  const [currentYear, setCurrentYear] = useState(
-    trials[trialIdx].years[0].year
-  );
+  const [currentYear, setCurrentYear] = useState(0);
 
   useEffect(() => {
-    if (trials[trialIdx].years.length > 0) {
+    if (trials[trialIdx].years.length === 1) {
       setCurrentYear(trials[trialIdx].years[0].year);
+    } else {
+      setCurrentYear(0);
     }
   }, [trialIdx]);
 
