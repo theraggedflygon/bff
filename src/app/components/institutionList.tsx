@@ -8,8 +8,13 @@ const InstitutionList = ({
   trialIdx,
   currentYear,
 }: InstitutionListProps) => {
-  const { addInstitution, removeInstitution, getInstitutionIdsByTrialAndYear } =
-    useTrials();
+  const {
+    addInstitution,
+    removeInstitution,
+    getInstitutionIdsByTrialAndYear,
+    addAlias,
+    removeAlias,
+  } = useTrials();
 
   const renderMatchDiv = (
     idx: number,
@@ -45,6 +50,59 @@ const InstitutionList = ({
     }
   };
 
+  const { trials, aliases } = useTrials();
+
+  const filteredAliases = trials[trialIdx].location.program
+    ? aliases.filter(
+        (alias) =>
+          alias.name.toLowerCase() ===
+          trials[trialIdx].location.program?.toLowerCase()
+      )
+    : [];
+  const trialAliases: string[] =
+    filteredAliases.length > 0
+      ? filteredAliases[0].aliases.map((alias) => alias.toLowerCase())
+      : [];
+
+  if (currentYear === 0) {
+    return (
+      <div className="px-2">
+        {institutions.map((inst, idx) => {
+          if (trialAliases.includes(inst.name.toLowerCase())) {
+            return (
+              <div
+                key={idx}
+                className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
+              >
+                {renderMatchDiv(idx, inst, highlight)}
+                <button
+                  className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer"
+                  onClick={() => removeAlias(trialIdx, inst.name)}
+                >
+                  ××
+                </button>
+              </div>
+            );
+          }
+          return (
+            <div
+              key={idx}
+              className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
+            >
+              {renderMatchDiv(idx, inst, highlight)}
+              <button
+                className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer"
+                onClick={() => addAlias(trialIdx, inst.name)}
+              >
+                ++
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   const currentIds = getInstitutionIdsByTrialAndYear(trialIdx, currentYear);
 
   if (currentIds === null) {
@@ -69,7 +127,10 @@ const InstitutionList = ({
               >
                 ×
               </button>
-              <button className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer">
+              <button
+                className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer"
+                onClick={() => removeAlias(trialIdx, inst.name)}
+              >
                 ××
               </button>
             </div>
@@ -87,7 +148,10 @@ const InstitutionList = ({
             >
               +
             </button>
-            <button className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer">
+            <button
+              className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer"
+              onClick={() => addAlias(trialIdx, inst.name)}
+            >
               ++
             </button>
           </div>

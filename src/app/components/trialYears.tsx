@@ -1,13 +1,17 @@
 import * as React from "react";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import difflib from "difflib";
 import { useTrials } from "@/context/trialContext";
 import FilterEntry from "./filterTrials";
 import InstitutionList from "./institutionList";
 
 const TrialYears = ({ trialIdx }: TrialYearsProps) => {
-  const { trials, getInstitutionsByYear, getInstitutionIdsByTrialAndYear } =
-    useTrials();
+  const {
+    trials,
+    getInstitutionsByYear,
+    getInstitutionIdsByTrialAndYear,
+    getInstitutionsByTrial,
+  } = useTrials();
 
   const [currentYear, setCurrentYear] = useState(
     trials[trialIdx].years[0].year
@@ -23,16 +27,23 @@ const TrialYears = ({ trialIdx }: TrialYearsProps) => {
     if (
       !Number.isNaN(e.target.value) &&
       Number.parseInt(e.target.value) !== currentYear &&
-      trials[trialIdx].years.filter(
+      (trials[trialIdx].years.filter(
         (y) => y.year === Number.parseInt(e.target.value)
-      ).length > 0
+      ).length > 0 ||
+        Number.parseInt(e.target.value) === 0)
     ) {
       setCurrentYear(Number.parseInt(e.target.value));
     }
   };
 
   const getExactMatches = () => {
-    const yearInstitutions = getInstitutionsByYear(currentYear);
+    let yearInstitutions;
+    if (currentYear === 0) {
+      yearInstitutions = getInstitutionsByTrial(trialIdx);
+    } else {
+      yearInstitutions = getInstitutionsByYear(currentYear);
+    }
+
     if (yearInstitutions !== null) {
       return yearInstitutions.filter(
         (inst) =>
@@ -44,7 +55,13 @@ const TrialYears = ({ trialIdx }: TrialYearsProps) => {
   };
 
   const getNearMatches = () => {
-    const yearInstitutions = getInstitutionsByYear(currentYear);
+    let yearInstitutions;
+    if (currentYear === 0) {
+      yearInstitutions = getInstitutionsByTrial(trialIdx);
+    } else {
+      yearInstitutions = getInstitutionsByYear(currentYear);
+    }
+
     if (yearInstitutions !== null && trials[trialIdx].location.program) {
       const matches = difflib.getCloseMatches(
         trials[trialIdx].location.program.toLowerCase(),
@@ -54,6 +71,7 @@ const TrialYears = ({ trialIdx }: TrialYearsProps) => {
         10,
         0
       );
+
       const fullMatches = [];
       for (let i = 0; i < matches.length; i++) {
         const chunks = matches[i].split("-");
@@ -68,90 +86,6 @@ const TrialYears = ({ trialIdx }: TrialYearsProps) => {
 
     return [];
   };
-
-  // const renderMatchDiv = (
-  //   idx: number,
-  //   institution: IInstitution,
-  //   highlight: string | null = null
-  // ) => {
-  //   const institutionString = getRenderInstitution(institution);
-  //   if (highlight === null) {
-  //     return (
-  //       <div className="mr-auto">{`${idx + 1}. ${institutionString}`}</div>
-  //     );
-  //   } else {
-  //     const highlightIndex = institutionString
-  //       .toLowerCase()
-  //       .indexOf(highlight.toLowerCase());
-  //     const preHighlightStr = institutionString.slice(0, highlightIndex);
-  //     const highlightStr = institutionString.slice(
-  //       highlightIndex,
-  //       highlightIndex + highlight.length
-  //     );
-  //     const postHighlightStr = institutionString.slice(
-  //       highlightIndex + highlight.length
-  //     );
-  //     return (
-  //       <div className="whitespace-pre-wrap mr-auto">
-  //         <span>
-  //           {preHighlightStr}
-  //           <span className="bg-yellow-300">{highlightStr}</span>
-  //           {postHighlightStr}
-  //         </span>
-  //       </div>
-  //     );
-  //   }
-  // };
-
-  // const renderMatches = (
-  //   matches: IInstitution[],
-  //   highlight: string | null = null
-  // ) => {
-  //   const currentIds = getInstitutionIdsByTrialAndYear();
-
-  //   return (
-  //     <div className="px-2">
-  //       {matches.map((match, idx) => {
-  //         if (currentIds?.includes(match.id)) {
-  //           return (
-  //             <div
-  //               key={idx}
-  //               className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
-  //             >
-  //               {renderMatchDiv(idx, match, highlight)}
-  //               <button
-  //                 className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer mx-1"
-  //                 onClick={() => removeInstitution(match.id)}
-  //               >
-  //                 ×
-  //               </button>
-  //               <button className="bg-red-500 px-1.5 rounded-sm hover:cursor-pointer">
-  //                 ××
-  //               </button>
-  //             </div>
-  //           );
-  //         }
-  //         return (
-  //           <div
-  //             key={idx}
-  //             className="flex flex-row py-1 hover:bg-blue-500 px-2 rounded-lg "
-  //           >
-  //             {renderMatchDiv(idx, match, highlight)}
-  //             <button
-  //               className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer mx-1"
-  //               onClick={() => addInstitution(match.id)}
-  //             >
-  //               +
-  //             </button>
-  //             <button className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer">
-  //               ++
-  //             </button>
-  //           </div>
-  //         );
-  //       })}
-  //     </div>
-  //   );
-  // };
 
   const exactMatches = getExactMatches();
   const nearMatches = getNearMatches();
@@ -168,6 +102,9 @@ const TrialYears = ({ trialIdx }: TrialYearsProps) => {
           onChange={handleSelect}
           value={currentYear}
         >
+          <option value={0} key={0}>
+            All
+          </option>
           {trials[trialIdx].years.map((year) => (
             <option value={year.year} key={year.year}>
               {year.year}
@@ -193,14 +130,6 @@ const TrialYears = ({ trialIdx }: TrialYearsProps) => {
     </div>
   );
 };
-
-// export const getRenderInstitution = (institution: IInstitution): string => {
-//   return `${institution.name} (${institution.city}, ${
-//     institution.state
-//       ? institution.state + ", " + institution.country
-//       : institution.country
-//   })`;
-// };
 
 export default TrialYears;
 

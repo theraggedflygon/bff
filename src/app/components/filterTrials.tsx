@@ -2,6 +2,7 @@ import { IInstitution, nihContext } from "@/context/nihContext";
 import * as React from "react";
 import { useState, useEffect, useContext } from "react";
 import InstitutionList, { getRenderInstitution } from "./institutionList";
+import { useTrials } from "@/context/trialContext";
 
 const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
   const [filterText, setFilterText] = useState("");
@@ -9,6 +10,8 @@ const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
   const [filteredInstitutions, setFilteredInstitutions] = useState<
     IInstitution[]
   >([]);
+
+  const { getInstitutionsByTrial } = useTrials();
 
   const MAX_INSTITUTIONS = 500;
 
@@ -44,8 +47,15 @@ const FilterTrials = ({ trialIdx, year }: FilterTrialsProps) => {
   };
 
   const renderFilteredTrials = () => {
-    const yearInstitutions = NIHFundingData.filter((ny) => ny.year === year)[0]
-      .institutions;
+    let yearInstitutions: IInstitution[];
+
+    if (year === 0) {
+      // yearInstitutions = getInstitutionsByTrial(trialIdx);
+      yearInstitutions = [];
+    } else {
+      yearInstitutions = NIHFundingData.filter((ny) => ny.year === year)[0]
+        .institutions;
+    }
 
     if (filteredInstitutions.length === yearInstitutions.length) {
       return <div></div>;
