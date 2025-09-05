@@ -10,13 +10,16 @@ import {
 import state2AbbreviationJson from "../../reference/stateAbbreviations.json";
 
 const LoadFile = () => {
-  const { initializeTrials, getInstitutionsByYear } = useTrials();
+  const { initializeTrials, getInstitutionsByYear, initRunName } = useTrials();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
       reader.onload = (readEvent) => {
         if (readEvent.target?.result) {
           const fileValue = readEvent.target.result as string;
+          initRunName(
+            e.target.files ? e.target.files[0].name : "missing_filename"
+          );
           parseTrials(fileValue);
         }
       };

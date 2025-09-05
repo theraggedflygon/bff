@@ -37,9 +37,7 @@ const TrialMenu = () => {
 
   const prevIncompleteTrial = () => {
     for (let i = trialIdx - 1; i >= 0; i--) {
-      console.log(i);
       if (trials[i].complete === TrialStatus.INCOMPLETE) {
-        console.log(i - trialIdx);
         incrTrialIdx(i - trialIdx);
         return;
       }

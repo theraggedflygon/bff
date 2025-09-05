@@ -15,6 +15,7 @@ export const TrialsProvider = ({ children }: { children: ReactNode }) => {
 
   const [trials, setTrials] = useState<ITrial[]>([]);
   const [aliases, setAliases] = useState<IAlias[]>([]);
+  const [runName, setRunName] = useState<string>("");
 
   const getInstitutionsByYear = (currentYear: number) => {
     const yearMatches = NIHData.filter((year) => year.year === currentYear);
@@ -119,10 +120,6 @@ export const TrialsProvider = ({ children }: { children: ReactNode }) => {
       : true;
   };
 
-  useEffect(() => {
-    console.log(aliases);
-  }, [aliases]);
-
   const addAlias = (trialIdx: number, nihInst: string) => {
     const trialInst = trials[trialIdx].location.program;
     if (!trialInst) {
@@ -190,7 +187,6 @@ export const TrialsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const removeIdx = currentAliases[0].aliases.indexOf(nihInst);
-    console.log(aliases);
     if (removeIdx < 0) {
       return;
     }
@@ -270,6 +266,9 @@ export const TrialsProvider = ({ children }: { children: ReactNode }) => {
         getInstitutionsByTrial: getInstitutionsByTrial,
         handleLock: handleLock,
         handleUnlock: handleUnlock,
+        runName: runName,
+        initRunName: (filename) =>
+          setRunName(filename.split(".").slice(0, -1).join(".")),
       }}
     >
       {children}
@@ -328,6 +327,8 @@ interface TrialAPI {
   removeAlias: (trialIdx: number, nihInst: string) => void;
   handleLock: (trialIdx: number) => void;
   handleUnlock: (trialIdx: number) => void;
+  runName: string;
+  initRunName: (filename: string) => void;
 }
 
 export enum TrialStatus {
