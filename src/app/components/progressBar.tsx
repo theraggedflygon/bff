@@ -80,7 +80,7 @@ const ProgressBar = ({ openModal }: ProgressBarProps) => {
   };
 
   const renderDownloadButton = () => {
-    if (completedTrials === trials.length || trials.length === 0) {
+    if (trials.length === 0) {
       return <div></div>;
     }
     return (
