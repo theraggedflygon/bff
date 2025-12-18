@@ -1,4 +1,5 @@
-import * as React from "react";
+import * as React from 'react';
+import { useState } from 'react';
 import Papa from "papaparse";
 import {
   ITrial,
@@ -6,11 +7,14 @@ import {
   useTrials,
   TrialStatus,
 } from "@/context/trialContext";
+import { useBeforeUnload } from "../hooks/useBeforeUnload";
 
 import state2AbbreviationJson from "../../reference/stateAbbreviations.json";
 
 const LoadFile = () => {
   const { initializeTrials, getInstitutionsByYear, initRunName } = useTrials();
+  const [loaded, setLoaded] = useState<boolean>(false);
+  useBeforeUnload(loaded);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
@@ -25,6 +29,7 @@ const LoadFile = () => {
       };
 
       reader.readAsText(e.target.files[0]);
+      setLoaded(true);
     }
   };
 
