@@ -96,8 +96,9 @@ const InstitutionList = ({
     }
     return (
       <button
-        className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer"
+        className="bg-green-500 px-1.5 rounded-sm hover:cursor-pointer disabled:bg-green-200"
         onClick={() => addAlias(trialIdx, inst.name)}
+        disabled={trials[trialIdx].location.program === ""}
       >
         ++
       </button>
