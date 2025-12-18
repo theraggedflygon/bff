@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "difflib": "^0.2.4",
-    "next": "15.4.3",
+    "next": "15.4.10",
     "papaparse": "^5.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0"
